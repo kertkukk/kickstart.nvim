@@ -3,7 +3,7 @@
 
   - "<space>sh" to [s]earch the [h]elp documentation,
   - If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-  - "K" - view hover documentation  
+  - "K" - view hover documentation
 --]]
 
 -- Global variables
@@ -193,7 +193,7 @@ require('lazy').setup({
       },
     },
   },
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -265,7 +265,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- The easiest way to use Telescope, is to start by doing something like:
@@ -355,7 +355,7 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',    opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -804,23 +804,26 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
+    lazy = false,
+    priority = 100,
+    config = function()
+      local status_ok, treesitter = pcall(require, 'nvim-treesitter')
+      if not status_ok then
+        vim.notify('nvim-treesitter not found', vim.log.levels.ERROR)
+        return
+      end
+
+      -- Use the setup function directly from config.lua
+      require('nvim-treesitter.config').setup({
+        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+        auto_install = true,
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = { 'ruby' },
+        },
+        indent = { enable = true, disable = { 'ruby' } },
+      })
+    end,
   },
   -- My Plugins
   {
@@ -855,15 +858,15 @@ require('lazy').setup({
               end
 
               require('telescope.pickers')
-                .new({}, {
-                  prompt_title = 'Harpoon',
-                  finder = require('telescope.finders').new_table {
-                    results = file_paths,
-                  },
-                  previewer = conf.file_previewer {},
-                  sorter = conf.generic_sorter {},
-                })
-                :find()
+                  .new({}, {
+                    prompt_title = 'Harpoon',
+                    finder = require('telescope.finders').new_table {
+                      results = file_paths,
+                    },
+                    previewer = conf.file_previewer {},
+                    sorter = conf.generic_sorter {},
+                  })
+                  :find()
             end
             toggle_telescope(harpoon:list())
           end,
