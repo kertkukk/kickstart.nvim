@@ -804,17 +804,16 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    lazy = false,
-    priority = 100,
+    event = { 'BufReadPost', 'BufNewFile' },
     config = function()
-      local status_ok, treesitter = pcall(require, 'nvim-treesitter')
+      -- Only try to setup if the module is available
+      local status_ok, treesitter_configs = pcall(require, 'nvim-treesitter.configs')
       if not status_ok then
-        vim.notify('nvim-treesitter not found', vim.log.levels.ERROR)
+        vim.notify('nvim-treesitter.configs not found', vim.log.levels.ERROR)
         return
       end
 
-      -- Use the setup function directly from config.lua
-      require('nvim-treesitter.config').setup({
+      treesitter_configs.setup({
         ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
         auto_install = true,
         highlight = {
